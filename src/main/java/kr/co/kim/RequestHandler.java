@@ -30,7 +30,7 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
             // The handling of the user's request can be implemented here
-            readRequestHeaderInfo(in);
+            Map<String, String> headers = readRequestHeaderInfo(in);
 
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "Hello World Good".getBytes();
@@ -38,29 +38,36 @@ public class RequestHandler extends Thread {
             responseBody(dos, body);
             
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("error", e);
         }
     }
 
-    private void readRequestHeaderInfo(InputStream in) throws IOException {
-        Map<String, String> headers = new HashMap<>();
+    private Map<String, String> readRequestHeaderInfo(InputStream in) throws IOException {
+        Map<String, String> headerMap = new HashMap<>();
         BufferedReader buf = new BufferedReader(new InputStreamReader(in));
+        boolean isFirst = true;
+
         while(true) {
             String rowData = buf.readLine();
             log.info(rowData);
 
             String[] header = rowData.split(":");
-            if(header.length == 0) {
-            } else {
-                headers.put(header[0].trim(), header[1].trim());
+            if(header.length == 1 && isFirst) {
+                String[] firstHeaderDatas = header[0].split(" ");
+                headerMap.put("Method", firstHeaderDatas[0]);
+                headerMap.put("Url", firstHeaderDatas[1]);
+                headerMap.put("Protocal", firstHeaderDatas[2]);
+                isFirst = false;
+            } else if(header.length == 2) {
+                headerMap.put(header[0].trim(), header[1].trim());
             }
-
-            
 
             if("".equals(rowData) || rowData == null) {
                 break;
             }
         }
+
+        return headerMap;
     }
 
     private void responseBody(DataOutputStream dos, byte[] body) {
