@@ -3,11 +3,15 @@ package kr.co.kim;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +37,33 @@ public class RequestHandler extends Thread {
             Map<String, String> headers = readRequestHeaderInfo(in);
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello World Good".getBytes();
+            byte[] body = createResponseBody(headers.get("Url"));
             response200Header(dos, body.length);
             responseBody(dos, body);
             
         } catch (Exception e) {
             log.error("error", e);
         }
+    }
+
+    private byte[] createResponseBody(String url) throws IOException {
+        String webPage = url;
+        if(url.equals("/")) {
+            webPage = "/index.html";
+        }
+
+        // String filePath = "D:\\JavaExam\\webserver\\src\\main\\webapp" + webPage.replace("/", "\\");
+        // String filePath = "webapp" + webPage.replace("/", "\\");
+        String filePath = "./webapp" + webPage;
+        File file = new File(filePath);
+        log.info(file.getAbsolutePath());
+
+        Path path = Paths.get(filePath);
+        if(Files.exists(path)) {
+            return Files.readAllBytes(path);
+        }
+
+        return "No Found".getBytes();
     }
 
     private Map<String, String> readRequestHeaderInfo(InputStream in) throws IOException {
