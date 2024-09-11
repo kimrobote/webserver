@@ -18,6 +18,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.co.kim.controller.HomeController;
+import kr.co.kim.controller.IController;
+import kr.co.kim.controller.UserController;
+
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
@@ -37,7 +41,7 @@ public class RequestHandler extends Thread {
             Map<String, String> headers = readRequestHeaderInfo(in);
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = createResponseBody(headers.get("Url"));
+            byte[] body = createResponseBody(headers);
             response200Header(dos, body.length);
             responseBody(dos, body);
             
@@ -46,24 +50,19 @@ public class RequestHandler extends Thread {
         }
     }
 
-    private byte[] createResponseBody(String url) throws IOException {
-        String webPage = url;
-        if(url.equals("/")) {
-            webPage = "/index.html";
+    private byte[] createResponseBody(Map<String, String> headers) throws Exception {
+        // int pathIndex = url.indexOf(url, 8);
+        String allPath = headers.get("Path");
+        String[] paths = allPath.split("/");
+        IController controller;
+
+        if(paths.length > 2 && paths[1] == "user") {
+            controller = new UserController();
+        } else {
+            controller = new HomeController();
         }
 
-        // String filePath = "D:\\JavaExam\\webserver\\src\\main\\webapp" + webPage.replace("/", "\\");
-        // String filePath = "webapp" + webPage.replace("/", "\\");
-        String filePath = "./webapp" + webPage;
-        File file = new File(filePath);
-        log.info(file.getAbsolutePath());
-
-        Path path = Paths.get(filePath);
-        if(Files.exists(path)) {
-            return Files.readAllBytes(path);
-        }
-
-        return "No Found".getBytes();
+        return controller.handleRequest(headers.get("Method"), allPath, allPath);
     }
 
     private Map<String, String> readRequestHeaderInfo(InputStream in) throws IOException {
@@ -79,7 +78,7 @@ public class RequestHandler extends Thread {
             if(header.length == 1 && isFirst) {
                 String[] firstHeaderDatas = header[0].split(" ");
                 headerMap.put("Method", firstHeaderDatas[0]);
-                headerMap.put("Url", firstHeaderDatas[1]);
+                headerMap.put("Path", firstHeaderDatas[1]);
                 headerMap.put("Protocal", firstHeaderDatas[2]);
                 isFirst = false;
             } else if(header.length == 2) {
