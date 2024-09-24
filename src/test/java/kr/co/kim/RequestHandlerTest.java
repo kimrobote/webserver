@@ -1,8 +1,6 @@
 package kr.co.kim;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 public class RequestHandlerTest {
     private RequestHandler requestHandler;
@@ -12,7 +10,4 @@ public class RequestHandlerTest {
         requestHandler = new RequestHandler(null);
     }
 
-    
-
-    
 }

@@ -7,3 +7,6 @@ pom.xml에 Slf4j library를 등록해서 logger 기록할 수 있도록 작업�
 
 2024-09-07
 - 요청 URL에 해당하는 파일 webapp 디렉토리에서 읽어 전달하도록 구현함.
+
+2024-09-24
+- Http Body 분석 기능 구현함.
