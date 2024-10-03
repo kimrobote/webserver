@@ -8,17 +8,19 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.co.kim.helper.RequestParser;
+
 public class HomeController implements IController {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
     @Override
-    public byte[] handleRequest(String method, String url, String requestBoby) throws Exception {
-         String filePath = "./webapp/index.html";
+    public byte[] handleRequest(RequestParser request) throws Exception {
+        String filePath = "./webapp/index.html";
         File file = new File(filePath);
         log.info(file.getAbsolutePath());
 
         Path path = Paths.get(filePath);
-        if(Files.exists(path)) {
+        if (Files.exists(path)) {
             return Files.readAllBytes(path);
         }
 

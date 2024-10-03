@@ -36,7 +36,7 @@ public class RequestHandler extends Thread {
             parser.parse(in);
 
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = createResponseBody(parser.getHeaders());
+            byte[] body = createResponseBody(parser);
             response200Header(dos, body.length);
             responseBody(dos, body);
 
@@ -45,13 +45,13 @@ public class RequestHandler extends Thread {
         }
     }
 
-    private byte[] createResponseBody(Map<String, String> headers) throws Exception {
-        if (headers.size() == 0) {
+    private byte[] createResponseBody(RequestParser request) throws Exception {
+        if (request.getHeaders().size() == 0) {
             return "".getBytes();
         }
 
         // int pathIndex = url.indexOf(url, 8);
-        String allPath = headers.get("Path");
+        String allPath = request.getHeaders().get("Path");
         String[] paths = allPath.split("/");
         IController controller;
 
@@ -61,7 +61,7 @@ public class RequestHandler extends Thread {
             controller = new HomeController();
         }
 
-        return controller.handleRequest(headers.get(HeaderCodes.METHOD), allPath, allPath);
+        return controller.handleRequest(request);
     }
 
     private void responseBody(DataOutputStream dos, byte[] body) {
