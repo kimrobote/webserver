@@ -10,3 +10,7 @@ pom.xml에 Slf4j library를 등록해서 logger 기록할 수 있도록 작업�
 
 2024-09-24
 - Http Body 분석 기능 구현함.
+
+2024-10-26
+- 회원 가입 기능 구현
+- Request, Response 구조 변경

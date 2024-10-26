@@ -1,6 +1,7 @@
 package kr.co.kim.controller;
 
 import kr.co.kim.helper.RequestParser;
+import kr.co.kim.model.ResponseData;
 
 public interface IController {
     /**
@@ -11,5 +12,5 @@ public interface IController {
      * @param requestBoby Body
      * @return This method returns the response result as a byte array.
      */
-    public byte[] handleRequest(RequestParser request) throws Exception;
+    public ResponseData handleRequest(RequestParser request) throws Exception;
 }

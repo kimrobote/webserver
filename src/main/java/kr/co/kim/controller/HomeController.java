@@ -8,22 +8,29 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kr.co.kim.helper.HttpStatusEnum;
 import kr.co.kim.helper.RequestParser;
+import kr.co.kim.model.ResponseData;
 
 public class HomeController implements IController {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
     @Override
-    public byte[] handleRequest(RequestParser request) throws Exception {
+    public ResponseData handleRequest(RequestParser request) throws Exception {
         String filePath = "./webapp/index.html";
         File file = new File(filePath);
         log.info(file.getAbsolutePath());
 
+        ResponseData respData = new ResponseData();
+
         Path path = Paths.get(filePath);
         if (Files.exists(path)) {
-            return Files.readAllBytes(path);
+            respData.setStatus(HttpStatusEnum.HTTP200);
+            respData.setBody(Files.readAllBytes(path));
+            return respData;
         }
 
-        return "No Found".getBytes();
+        respData.setStatus(HttpStatusEnum.HTTP404);
+        return respData;
     }
 }
